@@ -29,6 +29,8 @@ app.use(require("morgan")("dev"));
 app.set("views", path.join(__dirname, "/src/views"));
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
+app.use(Express.static(path.join(__dirname, "public")));
+app.use(Express.urlencoded({ extended: true }));
 
 app.get("/", function (req, res) {
   res.render("home.ejs");
@@ -40,12 +42,10 @@ app.get("/users", passport.authenticate("bearer", { session: false }), function 
 
 // Routes
 const farAwayRoutes = require("./src/routes/farAwayRoutes.js");
-
-// app.get("/", function (req, res) {
-//   res.send("Hello word");
-// });
-
 app.use("/faraway", farAwayRoutes);
+
+const userRoutes = require("./src/routes/userRoutes.js");
+app.use("/users", userRoutes);
 
 app.listen(3030, function () {
   console.log("Listening http://localhost:3030/");
