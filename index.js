@@ -1,28 +1,12 @@
 const Express = require("express");
 const path = require("path");
 
-const passport = require("passport");
-const Strategy = require("passport-http-bearer").Strategy;
+const { bearerAuthenticator } = require("./src/utils/bearerStrategy.js");
 
 const mongoose = require("mongoose");
-const UserModel = require("./src/models/userModel");
 mongoose.connect("mongodb://127.0.0.1:27017/api-rest");
 
 const ejsMate = require("ejs-mate");
-
-passport.use(
-  new Strategy(function (token, cb) {
-    process.nextTick(async function () {
-      try {
-        const user = await UserModel.findOne({ token });
-        if (!user) return cb(null, false);
-        return cb(null, user);
-      } catch (err) {
-        return cb(err);
-      }
-    });
-  })
-);
 
 const app = Express();
 app.use(require("morgan")("dev"));
@@ -36,13 +20,13 @@ app.get("/", function (req, res) {
   res.render("home.ejs");
 });
 
-app.get("/users", passport.authenticate("bearer", { session: false }), function (req, res) {
-  res.json(req.user);
-});
+// app.get("/users", passport.authenticate("bearer", { session: false }), function (req, res) {
+//   res.json(req.user);
+// });
 
 // Routes
 const farAwayRoutes = require("./src/routes/farAwayRoutes.js");
-app.use("/faraway", farAwayRoutes);
+app.use("/faraway", bearerAuthenticator(), farAwayRoutes);
 
 const userRoutes = require("./src/routes/userRoutes.js");
 app.use("/users", userRoutes);
