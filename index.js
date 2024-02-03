@@ -1,5 +1,6 @@
 const Express = require("express");
 const path = require("path");
+const cors = require("cors");
 
 const { bearerAuthenticator } = require("./src/utils/bearerStrategy.js");
 
@@ -15,16 +16,14 @@ app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.use(Express.static(path.join(__dirname, "public")));
 app.use(Express.urlencoded({ extended: true }));
+app.use(Express.json());
+app.use(cors({ origin: true, credentials: true }));
 
+// Routes
 app.get("/", function (req, res) {
   res.render("home.ejs");
 });
 
-// app.get("/users", passport.authenticate("bearer", { session: false }), function (req, res) {
-//   res.json(req.user);
-// });
-
-// Routes
 const farAwayRoutes = require("./src/routes/farAwayRoutes.js");
 app.use("/faraway", bearerAuthenticator(), farAwayRoutes);
 

@@ -18,7 +18,6 @@ const bearerStrategy = new BearerStrategy(function (token, callback) {
 passport.use(bearerStrategy);
 
 const bearerAuthenticator = function (req, res, next) {
-  console.log("bearer strategy");
   return passport.authenticate("bearer", { session: false });
 };
 
