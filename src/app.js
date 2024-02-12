@@ -1,35 +1,37 @@
+require("dotenv").config();
+
 const Express = require("express");
 const path = require("path");
 const cors = require("cors");
-
-const { bearerAuthenticator } = require("./src/utils/bearerStrategy.js");
-
-const mongoose = require("mongoose");
-mongoose.connect("mongodb://127.0.0.1:27017/api-rest");
-
 const ejsMate = require("ejs-mate");
 
+const farAwayRoutes = require("./routes/farAwayRoutes.js");
+const userRoutes = require("./routes/userRoutes.js");
+require("./db/database.js"); // database connection instance
+const { bearerAuthenticator } = require("./utils/bearerStrategy.js");
+
 const app = Express();
-app.use(require("morgan")("dev"));
-app.set("views", path.join(__dirname, "/src/views"));
+
+// settings
+app.set("port", process.env.PORT || 8081);
+app.set("views", path.join(__dirname, "/views"));
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
+
+// middlewares
+app.use(require("morgan")("dev"));
 app.use(Express.static(path.join(__dirname, "public")));
 app.use(Express.urlencoded({ extended: true }));
 app.use(Express.json());
 app.use(cors({ origin: true, credentials: true }));
 
-// Routes
+// routes
 app.get("/", function (req, res) {
   res.render("home.ejs");
 });
 
-const farAwayRoutes = require("./src/routes/farAwayRoutes.js");
 app.use("/faraway", bearerAuthenticator(), farAwayRoutes);
 
-const userRoutes = require("./src/routes/userRoutes.js");
 app.use("/users", userRoutes);
 
-app.listen(3030, function () {
-  console.log("Listening http://localhost:3030/");
-});
+module.exports = app;

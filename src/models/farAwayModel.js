@@ -5,6 +5,7 @@ const ItemsSchema = new mongoose.Schema({
   author: { type: Schema.Types.ObjectId, ref: "User" },
   items: [
     {
+      uuid: String,
       order: Number,
       description: String,
       quantity: Number,

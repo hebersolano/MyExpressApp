@@ -5,8 +5,8 @@ const UserModel = require("../models/userModel");
 const bearerStrategy = new BearerStrategy(function (token, callback) {
   process.nextTick(async function () {
     try {
-      console.log(token);
       const user = await UserModel.findOne({ token });
+      console.log(user);
       if (!user) return callback(null, false);
       return callback(null, user);
     } catch (err) {

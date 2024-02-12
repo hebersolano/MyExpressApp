@@ -2,14 +2,14 @@ const { Router } = require("express");
 const router = Router({ mergeParams: true });
 
 const ItemsModel = require("../models/farAwayModel.js");
-const userModel = require("../models/userModel.js");
 
 router
   .route("/")
   .get(async function (req, res) {
     console.log(req.user._id);
     const data = await ItemsModel.findOne({ author: req.user._id });
-    res.send(data.items);
+    if (!data) res.send([]);
+    else res.send(data?.items);
   })
   .post(async function (req, res) {
     try {
@@ -26,17 +26,11 @@ router
         });
         await myItem.save();
       } else {
+        console.log(data.items);
         data.items = req.body;
         await data.save();
       }
-      // await ItemsModel.findByIdAndUpdate(
-      //   { author: "65b404a3867f53112cf29341" },
-      //   { items: req.body },
-      //   { returnDocument: "after", upsert: true }
-      // );
-
-      // res.send(await ItemsModel.find({ author: req.user.username }));
-      res.send("test");
+      res.status(201).send("accepted");
     } catch (error) {
       console.error(error);
     }
