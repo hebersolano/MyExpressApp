@@ -1,39 +1,17 @@
 const { Router } = require("express");
 const router = Router({ mergeParams: true });
+const { getItems, saveItems } = require("../controllers/farAwayCtrl.js");
 
 const ItemsModel = require("../models/farAwayModel.js");
 
-router
-  .route("/")
-  .get(async function (req, res) {
-    console.log(req.user._id);
-    const data = await ItemsModel.findOne({ author: req.user._id });
-    if (!data) res.send([]);
-    else res.send(data?.items);
-  })
-  .post(async function (req, res) {
-    try {
-      console.log("params:", req.params);
-      console.log("body:", req.body);
-      console.log("query:", req.query);
-      console.log("user:", req.user);
-
-      const data = await ItemsModel.findOne({ author: req.user._id });
-      if (!data) {
-        const myItem = new ItemsModel({
-          author: req.user._id,
-          items: req.body,
-        });
-        await myItem.save();
-      } else {
-        console.log(data.items);
-        data.items = req.body;
-        await data.save();
-      }
-      res.status(201).send("accepted");
-    } catch (error) {
-      console.error(error);
-    }
-  });
+router.route("/").get(reqLogTest, getItems).post(reqLogTest, saveItems);
 
 module.exports = router;
+
+function reqLogTest(req, res, next) {
+  console.log("user:", req.user);
+  console.log("params:", req.params);
+  console.log("query:", req.query);
+  console.log("body:", req.body);
+  next();
+}

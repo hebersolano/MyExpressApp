@@ -1,35 +1,11 @@
 const { Router } = require("express");
 const router = Router({ mergeParams: true });
 
-const userModel = require("../models/userModel.js");
+const { getForm, newUser, getKey } = require("../controllers/users.controller.js");
+const { SetJwtCookie } = require("../utils/jwt.js");
 
-const generator = require("generate-password");
+router.route("/").get(getForm).post(SetJwtCookie, newUser);
 
-router
-  .route("/")
-  .get(function (req, res) {
-    res.render("register.ejs");
-  })
-  .post(async function (req, res) {
-    try {
-      const { username, email, password } = req.body;
-      const token = generator.generate({
-        length: 25,
-        numbers: true,
-      });
-
-      const user = new userModel({ username, email, token });
-      await user.save();
-      req.app.locals.token = token;
-      res.redirect("/users/key");
-    } catch (error) {
-      console.log(error);
-    }
-  });
-
-router.route("/key").get(function (req, res) {
-  res.render("apiKey.ejs", { token: req.app.locals.token });
-  delete req.app.locals.token;
-});
+router.route("/key").get(getKey);
 
 module.exports = router;

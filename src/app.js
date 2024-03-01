@@ -4,6 +4,7 @@ const Express = require("express");
 const path = require("path");
 const cors = require("cors");
 const ejsMate = require("ejs-mate");
+const cookieParser = require("cookie-parser");
 
 const farAwayRoutes = require("./routes/farAwayRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
@@ -20,6 +21,7 @@ app.set("view engine", "ejs");
 
 // middlewares
 app.use(require("morgan")("dev"));
+app.use(cookieParser("secret"));
 app.use(Express.static(path.join(__dirname, "public")));
 app.use(Express.urlencoded({ extended: true }));
 app.use(Express.json());
